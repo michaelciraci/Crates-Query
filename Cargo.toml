@@ -8,6 +8,7 @@ crates-query is a simple tool to query crates.io packages from the command line
 """
 documentation = "https://github.com/michaelciraci/Crates-Query"
 homepage = "https://github.com/michaelciraci/Crates-Query"
+repository = "https://github.com/michaelciraci/Crates-Query"
 readme = "README.md"
 keywords = ["cli", "crates"]
 license = "MIT"
@@ -15,6 +16,6 @@ license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-clap = { version = "4.4.11", features = ["derive"] }
+clap = { version = "4.4.11", features = ["derive", "cargo"] }
 crates-index = "2.3.0"
 tempfile = "3.8.1"

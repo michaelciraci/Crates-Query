@@ -13,11 +13,19 @@
 
 use std::{error::Error, fs::File, io::Write, process::Command};
 
-use clap::{Args, Parser, Subcommand};
+use clap::{crate_authors, crate_description, crate_version, Args, Parser, Subcommand};
 use tempfile::TempDir;
 
+const LONG_VERSION: &str = concat!(
+    crate_version!(),
+    " ",
+    crate_authors!(),
+    "\n",
+    crate_description!()
+);
+
 #[derive(Parser, Debug, Clone)]
-#[command(author, version, about)]
+#[command(author, version, about, long_about = LONG_VERSION)]
 pub struct Cli {
     #[command(subcommand)]
     command: Commands,
