@@ -142,10 +142,11 @@ dependencies = [
 
 [[package]]
 name = "crates-query"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "clap",
  "crates-index",
+ "semver",
  "tempfile",
 ]
 

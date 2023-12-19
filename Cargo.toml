@@ -1,6 +1,6 @@
 [package]
 name = "crates-query"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Michael Ciraci <michaelciraci@hotmail.com>"]
 description = """
@@ -18,4 +18,5 @@ license = "MIT"
 [dependencies]
 clap = { version = "4.4.11", features = ["derive", "cargo"] }
 crates-index = "2.3.0"
+semver = "1.0.20"
 tempfile = "3.8.1"

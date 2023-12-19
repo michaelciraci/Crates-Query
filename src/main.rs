@@ -105,8 +105,14 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         Commands::Versions => {
             println!("{} versions:\n", version.name());
-            for version in krate.versions().iter().map(|v| v.version()) {
-                println!("{version}");
+            let mut versions: Vec<_> = krate
+                .versions()
+                .iter()
+                .map(|v| semver::Version::parse(v.version()).unwrap())
+                .collect();
+            versions.sort();
+            for version in versions {
+                println!("{}", version);
             }
         }
     }
