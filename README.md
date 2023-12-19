@@ -7,6 +7,11 @@ Command line tool to query [crates.io](https://crates.io) index
 cargo install crates-query
 ```
 
+On NetBSD a pre-complied binary is available from the official repositories. To install it, simply run:
+```
+pkgin install crates-query
+```
+
 ### Usage
 
 There are several query subcommands:
