@@ -14,6 +14,7 @@
 use std::{error::Error, fs::File, io::Write, process::Command};
 
 use clap::{crate_authors, crate_description, crate_version, Args, Parser, Subcommand};
+use crates_index::{SparseIndex, Version};
 use tempfile::TempDir;
 
 const LONG_VERSION: &str = concat!(
@@ -33,7 +34,7 @@ pub struct Cli {
     krate: Crate,
 }
 
-#[derive(Subcommand, Debug, Clone)]
+#[derive(Subcommand, Debug, Clone, PartialEq, Eq)]
 pub enum Commands {
     Dependencies,
     RustVersion,
@@ -48,6 +49,7 @@ pub struct Crate {
     ver: Option<String>,
 }
 
+/// Force update of sparse index
 fn update_sparse_index(name: &str) -> Result<(), Box<dyn Error>> {
     let dir = TempDir::new()?;
 
@@ -67,20 +69,49 @@ fn update_sparse_index(name: &str) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+/// Get crate name and version if exists in index
+fn get_crate_and_version(
+    index: &SparseIndex,
+    name: String,
+    ver: Option<String>,
+) -> Option<(crates_index::Crate, Version)> {
+    match index.crate_from_cache(&name) {
+        Ok(krate) => match ver {
+            Some(v) => krate
+                .versions()
+                .iter()
+                .find(|kv| kv.version() == v)
+                .map(|found_version| (krate.clone(), found_version.clone())),
+            None => Some((
+                krate.clone(),
+                krate.highest_normal_version().unwrap().clone(),
+            )),
+        },
+        Err(_) => None,
+    }
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
     let cli = Cli::parse();
 
-    update_sparse_index(&cli.krate.name)?;
-
     let index = crates_index::SparseIndex::new_cargo_default()?;
-    let krate = index.crate_from_cache(&cli.krate.name)?;
-    let version = match cli.krate.ver {
-        Some(v) => krate
-            .versions()
-            .iter()
-            .find(|kv| kv.version() == v)
-            .expect("Could not find version"),
-        None => krate.highest_normal_version().unwrap(),
+
+    let (krate, version) = {
+        // If `must_update` is false, check if the index already has the info we need
+        let must_update = cli.command == Commands::Versions || cli.krate.ver.is_none();
+        if must_update {
+            update_sparse_index(&cli.krate.name)?;
+            get_crate_and_version(&index, cli.krate.name.clone(), cli.krate.ver.clone()).unwrap()
+        } else {
+            match get_crate_and_version(&index, cli.krate.name.clone(), cli.krate.ver.clone()) {
+                Some(info) => info,
+                None => {
+                    update_sparse_index(&cli.krate.name)?;
+                    get_crate_and_version(&index, cli.krate.name.clone(), cli.krate.ver.clone())
+                        .unwrap()
+                }
+            }
+        }
     };
 
     match cli.command {
