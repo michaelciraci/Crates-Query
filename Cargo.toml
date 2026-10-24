@@ -1,7 +1,8 @@
 [package]
 name = "crates-query"
-version = "0.1.2"
-edition = "2021"
+version = "0.1.3"
+edition = "2024"
+rust-version = "1.85"
 authors = ["Michael Ciraci <michaelciraci@hotmail.com>"]
 description = """
 crates-query is a simple tool to query crates.io packages from the command line
@@ -17,6 +18,6 @@ license = "MIT"
 
 [dependencies]
 clap = { version = "4.4.11", features = ["derive", "cargo"] }
-crates-index = "2.3.0"
+crates-index = "3"
 semver = "1.0.20"
 tempfile = "3.8.1"
